@@ -20,21 +20,107 @@ def ask_file
   gets.chomp
 end
 
-def add_secs(val)
-
-end
-
-def sub_secs(val)
-
-end
-
 def ask_change
+  puts "Enter your change start time: "
+  start = gets.chomp
+  puts "Enter the time difference in seconds: "
+  diff = gets.chomp
+  if (diff[0] == '-')
+    sub_secs(start, diff)
+  else
+    add_secs(start, diff)
+  end
+end
 
+def add_secs(start, diff)
+  @timings.each do | id, val |
+    old_start = val[:start]
+    old_end = val[:end]
+    puts "old_start: #{old_start}, old_end: #{old_end}"
+    if get_secs(old_start) > get_secs(start)
+      new_start_secs = get_secs(old_start) + (diff.to_i)
+      new_end_secs = get_secs(old_end) + (diff.to_i)
+      new_start = get_normalized(new_start_secs)
+      new_end = get_normalized(new_end_secs)
+      val[:start] = new_start
+      val[:end] = new_end
+    end
+  end
+end
+
+def sub_secs(start, diff)
+  @timings.each do | id, val |
+    old_start = val[:start]
+    old_end = val[:end]
+    if get_secs(old_start) > get_secs(start)
+      new_start_secs = get_secs(old_start) - diff
+      new_end_secs = get_secs(old_end) - diff
+      new_start = get_normalized(new_start_secs)
+      new_end = get_normalized(new_end_secs)
+      val[:start] = new_start
+      val[:end] = new_end
+    end
+  end
+end
+
+def normalize(val)
+  if !(/^([0-9]+):([0-9]+):([0-9]+),([0-9]+)$/).match(val)
+    hours = $1.to_i
+    mins = $2.to_i
+    secs = $3.to_i
+    milis = $4.to_i
+
+    while secs > 60
+      mins = mins+
+      secs = secs-60
+    end
+
+    while mins > 60
+      hours = hours+1
+      mins = mins-60
+    end
+    return "#{hours}:#{mins}:#{secs}:#{milis}"
+  else
+    puts "ERROR: CAN'T NORMALIZE THAT TIMING"
+  end
+  return nil
+end
+
+def get_normalized(num_secs)
+  hours = 0
+  mins = 0
+  secs = num_secs
+
+  while secs > 60
+    mins = mins+1
+    secs = secs-60
+  end
+
+  while mins > 60
+    hours = hours+1
+    mins = mins-60
+  end
+  return "#{hours}:#{mins}:#{secs},000"
+end
+
+def get_secs(val)
+
+  if (/^([0-9]+):([0-9]+):([0-9]+),([0-9]+)$/).match(val)
+    hours = ($1.to_i)
+    mins = ($2.to_i)
+    secs = ($3.to_i)
+    total = (hours.to_i)*3600 + (mins.to_i)*60 + (secs.to_i)
+    return total.to_i
+  else
+    puts "ERROR: CAN'T GET SECS"
+    return 0
+  end
 end
 
 #Re-time SRT files
 file_name = ask_file
-timings = init_file(file_name)
-
+@timings = init_file(file_name)
+ask_change
+puts @timings
 
 
