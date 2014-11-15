@@ -7,7 +7,7 @@ def init_file(file_name)
   file.each_with_index.map do | line, index |
     if line =~ /-->/
       (/^.*([0-9]{2}:[0-9]{2}:[0-9]{2},[0-9]{3}) --> .*([0-9]{2}:[0-9]{2}:[0-9]{2},[0-9]{3}).*/).match(line)
-      timings[i.to_s.to_sym] = { start: $1, end: $2 }
+      timings[i.to_s] = { start: $1, end: $2 }
       i = i+1
     end
   end
@@ -121,6 +121,8 @@ end
 #Re-time SRT files
 file_name = ask_file
 @timings = init_file(file_name)
-ask_change
+puts @timings["0"]
+#ask_change
+
 
 
