@@ -21,15 +21,21 @@ def ask_file
 end
 
 def ask_change
-  puts "Enter your change start time: "
-  start = gets.chomp
-  puts "Enter the time difference in seconds: "
-  diff = gets.chomp
-  if (diff[0] == '-')
-    retime(start, diff, '-')
-  else
-    retime(start, diff, '+')
+  loop do
+    puts "Do you want to edit the timings? (Y/n)"
+    keep_asking = gets.chomp
+    break if keep_asking == 'n' || keep_asking == 'N' || keep_asking == 'no' || keep_asking == 'No'
+    puts "Enter your change start time: "
+    start = gets.chomp
+    puts "Enter the time difference in seconds: "
+    diff = gets.chomp
+    if (diff[0] == '-')
+      retime(start, diff, '-')
+    else
+      retime(start, diff, '+')
+    end
   end
+  puts @timings
 end
 
 def retime(start, diff, op)
@@ -78,8 +84,6 @@ def get_normalized(num_secs)
   hours = 0
   mins = 0
   secs = num_secs
-  milis = (num_secs-num_secs.floor)*1000
-  puts "NUM SECS: #{num_secs}"
 
   while secs > 60
     mins = mins+1
@@ -90,7 +94,14 @@ def get_normalized(num_secs)
     hours = hours+1
     mins = mins-60
   end
-  return "#{hours}:#{mins}:#{secs},#{milis}"
+  return "#{fix_zeros(hours)}:#{fix_zeros(mins)}:#{fix_zeros(secs)},000"
+end
+
+def fix_zeros(val)
+  if (val.to_s).length == 1
+    val = '0' + (val.to_s)
+  end
+  val
 end
 
 def get_secs(val)
@@ -99,10 +110,8 @@ def get_secs(val)
     hours = ($1.to_i)
     mins = ($2.to_i)
     secs = ($3.to_i)
-    milis = ($4.to_i)
-    total = (hours.to_i)*3600 + (mins.to_i)*60 + (secs.to_i) + (milis.to_f/1000)
-    puts "SECS: #{total}"
-    return total.to_f
+    total = (hours.to_i)*3600 + (mins.to_i)*60 + (secs.to_i)
+    return total
   else
     puts "ERROR: CAN'T GET SECS"
     return 0
@@ -113,6 +122,5 @@ end
 file_name = ask_file
 @timings = init_file(file_name)
 ask_change
-puts @timings
 
 
