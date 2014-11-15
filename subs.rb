@@ -26,39 +26,27 @@ def ask_change
   puts "Enter the time difference in seconds: "
   diff = gets.chomp
   if (diff[0] == '-')
-    sub_secs(start, diff)
+    retime(start, diff, '-')
   else
-    add_secs(start, diff)
+    retime(start, diff, '+')
   end
 end
 
-def add_secs(start, diff)
-  @timings.each do | id, val |
-    old_start = val[:start]
-    old_end = val[:end]
-    puts "old_start: #{old_start}, old_end: #{old_end}"
-    if get_secs(old_start) > get_secs(start)
-      new_start_secs = get_secs(old_start) + (diff.to_i)
-      new_end_secs = get_secs(old_end) + (diff.to_i)
-      new_start = get_normalized(new_start_secs)
-      new_end = get_normalized(new_end_secs)
-      val[:start] = new_start
-      val[:end] = new_end
-    end
-  end
-end
-
-def sub_secs(start, diff)
+def retime(start, diff, op)
+  diff = diff.to_i.abs
   @timings.each do | id, val |
     old_start = val[:start]
     old_end = val[:end]
     if get_secs(old_start) > get_secs(start)
-      new_start_secs = get_secs(old_start) - diff
-      new_end_secs = get_secs(old_end) - diff
-      new_start = get_normalized(new_start_secs)
-      new_end = get_normalized(new_end_secs)
-      val[:start] = new_start
-      val[:end] = new_end
+      if op == '+'
+        new_start_secs = get_secs(old_start) + diff
+        new_end_secs = get_secs(old_end) + diff
+      elsif op == '-'
+        new_start_secs = get_secs(old_start) - diff
+        new_end_secs = get_secs(old_end) - diff
+      end
+      val[:start] = get_normalized(new_start_secs)
+      val[:end] = get_normalized(new_end_secs)
     end
   end
 end
