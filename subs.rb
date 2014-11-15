@@ -67,7 +67,7 @@ def normalize(val)
       hours = hours+1
       mins = mins-60
     end
-    return "#{hours}:#{mins}:#{secs}:#{milis}"
+    return "#{hours}:#{mins}:#{secs},#{milis}"
   else
     puts "ERROR: CAN'T NORMALIZE THAT TIMING"
   end
@@ -78,6 +78,8 @@ def get_normalized(num_secs)
   hours = 0
   mins = 0
   secs = num_secs
+  milis = (num_secs-num_secs.floor)*1000
+  puts "NUM SECS: #{num_secs}"
 
   while secs > 60
     mins = mins+1
@@ -88,7 +90,7 @@ def get_normalized(num_secs)
     hours = hours+1
     mins = mins-60
   end
-  return "#{hours}:#{mins}:#{secs},000"
+  return "#{hours}:#{mins}:#{secs},#{milis}"
 end
 
 def get_secs(val)
@@ -97,8 +99,10 @@ def get_secs(val)
     hours = ($1.to_i)
     mins = ($2.to_i)
     secs = ($3.to_i)
-    total = (hours.to_i)*3600 + (mins.to_i)*60 + (secs.to_i)
-    return total.to_i
+    milis = ($4.to_i)
+    total = (hours.to_i)*3600 + (mins.to_i)*60 + (secs.to_i) + (milis.to_f/1000)
+    puts "SECS: #{total}"
+    return total.to_f
   else
     puts "ERROR: CAN'T GET SECS"
     return 0
