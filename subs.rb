@@ -118,11 +118,24 @@ def get_secs(val)
   end
 end
 
+def store_milis
+  @milis = {}
+  @timings.each do |index, val|
+    (/^([0-9]+):([0-9]+):([0-9]+),([0-9]+)$/).match(val[:start])
+    temp_hash = {}
+    temp_hash[:start] = $4
+    (/^([0-9]+):([0-9]+):([0-9]+),([0-9]+)$/).match(val[:end])
+    temp_hash[:end] = $4
+    @milis[index] = temp_hash
+  end
+end
+
 #Re-time SRT files
 file_name = ask_file
 @timings = init_file(file_name)
-puts @timings["0"]
-#ask_change
+store_milis
+ask_change
+
 
 
 
