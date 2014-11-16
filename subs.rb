@@ -189,14 +189,14 @@ def restore_milis
   end
 end
 
-def show_gaps
+def print_gaps
+  end_old = 0
   @timings.each do | index, val |
-    end_old = 0 if end_old.nil?
     start_new = get_secs(val[:start])
     if (start_new-end_old) > 44
-      puts "Possible break point: #{get_normalized(end_old)}"
+      puts "Possible break point: #{get_normalized(end_old.to_i+1)} (~#{start_new-end_old} sec gap)"
     end
-    end_old = val[:end]
+    end_old = get_secs(val[:end])
   end
 end
 
@@ -213,6 +213,7 @@ end
 #Re-time SRT files
 file_name = ask_file
 @timings = init_file(file_name)
+print_gaps
 store_milis
 ask_change
 process_changes
