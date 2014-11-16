@@ -24,6 +24,7 @@ def ask_file
 end
 
 def ask_change
+  @vals_changed = nil
   loop do
     puts "Do you want to edit the timings? (Y/n)"
     keep_asking = gets.chomp
@@ -78,6 +79,7 @@ def retime(start, diff, op)
       val[:end] = get_normalized(new_end_secs)
     end
   end
+  @vals_changed = 1
 end
 
 def normalize(val)
@@ -187,14 +189,33 @@ def restore_milis
   end
 end
 
+def show_gaps
+  @timings.each do | index, val |
+    end_old = 0 if end_old.nil?
+    start_new = get_secs(val[:start])
+    if (start_new-end_old) > 44
+      puts "Possible break point: #{get_normalized(end_old)}"
+    end
+    end_old = val[:end]
+  end
+end
+
+def process_changes
+  if @vals_changed
+    restore_milis
+    rewrite_file
+    puts "Finished storing your retimed subs to #{@out_filename}.\n"
+  else puts "Finished without editing your file.\n"
+  end
+end
+
+
 #Re-time SRT files
 file_name = ask_file
 @timings = init_file(file_name)
 store_milis
 ask_change
-restore_milis
-rewrite_file
-puts "Finished storing your retimed subs to #{@out_filename}.\n"
+process_changes
 
 
 
